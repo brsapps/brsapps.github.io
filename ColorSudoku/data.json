@@ -1,0 +1,17 @@
+{
+  "playStoreUrl": "https://play.google.com/store/apps/details?id=com.brsapp.colorsudoku",
+  "tr": {
+    "title": "Renkli Sudoku",
+    "description": "Zekanı zorla! Renkli ve klasik sudoku ile heyecan dolu bir bulmaca keyfi!",
+    "button": "Google Play'den İndir",
+    "pageTitle": "Renkli Sudoku Oyunu",
+    "metaDescription": "Renkli sudoku mobil uygulamasını Google Play'den indirin."
+  },
+  "en": {
+    "title": "Color Sudoku",
+    "description": "Push your mind! Enjoy an exciting puzzle journey with colorful & classic sudoku!",
+    "button": "Download on Google Play",
+    "pageTitle": "Color Sudoku Game",
+    "metaDescription": "Download our mobile app filled with colorcolorful sudoku games from Google Play."
+  }
+}

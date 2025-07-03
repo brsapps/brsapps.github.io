@@ -1,0 +1,17 @@
+{
+  "playStoreUrl": "https://play.google.com/store/apps/details?id=com.brsapp.braingames",
+  "tr": {
+    "title": "Zeka Oyunları",
+    "description": "Beynini eğitmek ve zorlamak için günlük zeka, mantık ve bulmaca oyunları.",
+    "button": "Google Play'den İndir",
+    "pageTitle": "Zeka Oyunları",
+    "metaDescription": "Zeka oyunları mobil uygulamasını Google Play'den indirin."
+  },
+  "en": {
+    "title": "Brain Games",
+    "description": "Brain, logic, and puzzle games to train and challenge your mind daily.",
+    "button": "Download on Google Play",
+    "pageTitle": "Brain Games",
+    "metaDescription": "Download our mobile app filled with brain games from Google Play."
+  }
+}

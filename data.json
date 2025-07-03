@@ -1,0 +1,13 @@
+{
+  "tr": {
+    "title": "Renkli Sudoku",
+    "description": "Bu uygulama hayatınızı kolaylaştırmak için tasarlandı.",
+    "button": "Google Play'den İndir"
+  },
+  "en": {
+    "title": "Color Sudoku",
+    "description": "This app is designed to make your life easier.",
+    "button": "Get it on Google Play"
+  },
+  "playStoreUrl": "https://play.google.com/store/apps/details?id=com.example.colorsudoku"
+}

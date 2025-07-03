@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My App Portal</title>
+  <link rel="icon" href="../favicon.ico" />
+  <meta name="description" content="" id="metaDescription" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    .language-select {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      background-color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .app-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .app-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #1a1a1a;
+    }
+
+    .app-description {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .store-button {
+      display: inline-flex;
+      align-items: center;
+      background: linear-gradient(90deg, #1a73e8, #4fc3f7);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .store-button:hover {
+      background: linear-gradient(90deg, #1558d6, #29b6f6);
+    }
+
+    .store-button img {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+      }
+      .app-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <select class="language-select" id="langSelect" onchange="setLanguage(this.value)">
+      <option value="tr">🇹🇷 Türkçe</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
+
+    <img src="icon.png" alt="App Icon" class="app-icon" />
+    <div class="app-title" id="appTitle">...</div>
+    <div class="app-description" id="appDescription">...</div>
+    <a href="#" class="store-button" id="storeLink" target="_blank">
+      <img src="../playstore.png" alt="Google Play" />
+      <span id="storeText">...</span>
+    </a>
+  </div>
+
+  <script>
+    let appData = null;
+
+    function loadAppData(callback) {
+      fetch('data.json')
+        .then(res => res.json())
+        .then(data => {
+          appData = data;
+          callback();
+        })
+        .catch(err => console.error("JSON yüklenemedi:", err));
+    }
+
+    function setLanguage(lang) {
+      if (!appData) return;
+
+      const pageInfo = appData[lang];
+      if (!pageInfo) return;
+
+      document.getElementById('appTitle').textContent = pageInfo.title;
+      document.getElementById('appDescription').textContent = pageInfo.description;
+      document.getElementById('storeText').textContent = pageInfo.button;
+      document.getElementById('storeLink').href = appData.playStoreUrl;
+
+      document.title = pageInfo.pageTitle || 'My App Portal';
+      const metaDesc = document.getElementById('metaDescription');
+      if (metaDesc) metaDesc.setAttribute('content', pageInfo.metaDescription || '');
+
+      document.getElementById('langSelect').value = lang;
+      document.documentElement.lang = lang;
+    }
+
+    function detectAndSetInitialLanguage() {
+      const locale = navigator.language || navigator.userLanguage || 'en';
+      const region = new Intl.DateTimeFormat().resolvedOptions().locale;
+      const isTurkish = locale.startsWith('tr') || region.startsWith('tr');
+      setLanguage(isTurkish ? 'tr' : 'en');
+    }
+
+    window.onload = () => {
+      loadAppData(() => {
+        detectAndSetInitialLanguage();
+      });
+    };
+  </script>
+</body>
+</html>
