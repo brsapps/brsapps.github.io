@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "Brain Games - Zeka Oyunları",
+      "link": "./BrainGames",
+      "icon": "./BrainGames/icon.png"
+    },
+    {
+      "name": "Color Sudoku - Renkli Sudoku (Kapalı Test)",
+      "link": "./ColorSudoku",
+      "icon": "./ColorSudoku/icon.png"
+    }
+  ]
+}

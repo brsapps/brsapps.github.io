@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My App Portal</title>
-  <link rel="icon" href="../favicon.ico" />
+  <title>BRSApps Portal</title>
+  <link rel="icon" href="favicon.ico" />
   <meta name="description" content="" id="metaDescription" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -14,20 +14,62 @@
       padding: 0;
     }
 
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      position: relative;
+    }
+
     body {
-      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      padding: 20px;
       overflow: hidden;
+    }
+
+    /* Dört köşe dekorasyonlar */
+    .decor-top-left {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 100px;
+      opacity: 0.7;
+      z-index: 0;
+    }
+
+    .decor-top-right {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 100px;
+      opacity: 0.7;
+      z-index: 0;
+    }
+
+    .decor-bottom-left {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 100px;
+      opacity: 0.7;
+      z-index: 0;
+    }
+
+    .decor-bottom-right {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 100px;
+      opacity: 0.7;
+      z-index: 0;
     }
 
     .container {
       position: relative;
       background: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border-radius: 20px;
@@ -36,6 +78,7 @@
       max-width: 420px;
       text-align: center;
       animation: fadeIn 1.2s ease-in-out;
+      z-index: 1;
     }
 
     .language-select {
@@ -97,11 +140,11 @@
     }
 
     @keyframes fadeIn {
-      0% {
+      from {
         opacity: 0;
         transform: translateY(20px);
       }
-      100% {
+      to {
         opacity: 1;
         transform: translateY(0);
       }
@@ -118,6 +161,12 @@
   </style>
 </head>
 <body>
+  <!-- 4 köşe dekor görselleri -->
+  <img src="../brsapp.png" class="decor-top-left" alt="Decor Top Left">
+  <img src="../brsapp.png" class="decor-top-right" alt="Decor Top Right">
+  <img src="../brsapp.png" class="decor-bottom-left" alt="Decor Bottom Left">
+  <img src="../brsapp.png" class="decor-bottom-right" alt="Decor Bottom Right">
+
   <div class="container">
     <select class="language-select" id="langSelect" onchange="setLanguage(this.value)">
       <option value="tr">🇹🇷 Türkçe</option>
