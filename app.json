@@ -6,7 +6,7 @@
       "icon": "./BrainGames/icon.png"
     },
     {
-      "name": "Color Sudoku - Renkli Sudoku (Kapalı Test)",
+      "name": "Color Sudoku - Renkli Sudoku",
       "link": "./ColorSudoku",
       "icon": "./ColorSudoku/icon.png"
     }
