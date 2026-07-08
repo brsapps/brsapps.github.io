@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Color Sudoku Share Redirect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Open Graph metadata for WhatsApp and other platforms -->
+  <meta property="og:title" content="Sudoku Oyunu Paylaşıldı">
+  <meta property="og:description" content="Senin için bir Sudoku oyunu hazırladım! Bakalım çözebilecek misin?">
+  <meta property="og:type" content="website">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #121212;
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #121212;
+      background-color: #ffee00;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:active {
+      opacity: 0.8;
+    }
+    .spinner {
+      border: 4px solid rgba(255,255,255,0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #ffee00;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="loading-container">
+    <div class="spinner"></div>
+    <h2>Color Sudoku Açılıyor...</h2>
+    <p>Eğer uygulama otomatik olarak açılmazsa, aşağıdaki butona tıklayın.</p>
+  </div>
+  
+  <a id="redirect-btn" class="btn" href="#">Oyunu Aç</a>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedState = urlParams.get('sharedState') || '';
+    const type = urlParams.get('type') || 'normal'; // 'normal' veya 'color'
+    
+    const schemeUrl = type === 'color' 
+      ? `colorsudoku://sudoku/colorsudokugame?sharedState=${sharedState}`
+      : `colorsudoku://sudoku/normalsudokugame?sharedState=${sharedState}`;
+      
+    document.getElementById('redirect-btn').href = schemeUrl;
+    
+    // Auto-redirect immediately
+    window.location.href = schemeUrl;
+    
+    // Fallback info if redirect takes too long
+    setTimeout(() => {
+      document.querySelector('h2').textContent = "Color Sudoku";
+      document.querySelector('.spinner').style.display = 'none';
+      document.querySelector('p').textContent = "Uygulamayı açmak için aşağıdaki butona tıklayabilirsiniz.";
+    }, 3000);
+  </script>
+</body>
+</html>
