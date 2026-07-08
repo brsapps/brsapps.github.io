@@ -1,115 +1,210 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
-  <title>Color Sudoku Share Redirect</title>
+  <title>Color Sudoku</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Open Graph metadata for WhatsApp and other platforms -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Open Graph metadata -->
   <meta property="og:title" content="Color Sudoku Oyunu Paylaşıldı">
-  <meta property="og:description" content="Senin için bir Sudoku oyunu hazırladım! Bakalım çözebilecek misin?">
+  <meta property="og:description" content="Senin için bir Color Sudoku oyunu hazırladım! Bakalım çözebilecek misin?">
   <meta property="og:type" content="website">
-
+  <meta property="og:image" content="icon.png">
+  
   <style>
+    :root {
+      --primary: #ffee00;
+      --bg: #0d0e12;
+      --card-bg: rgba(25, 27, 38, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #ffffff;
+      --text-muted: #8b92b6;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #121212;
-      color: #ffffff;
+      min-height: 100vh;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(254, 238, 0, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 198, 255, 0.04) 0%, transparent 40%);
+      color: var(--text);
       text-align: center;
-      padding: 20px;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    /* Glow backdrop element */
+    .glow-backdrop {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: var(--primary);
+      filter: blur(120px);
+      opacity: 0.15;
+      border-radius: 50%;
+      z-index: 1;
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.12; }
+      100% { transform: scale(1.2); opacity: 0.2; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 400px;
+      padding: 40px 24px;
+      border-radius: 24px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-icon-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      padding: 3px;
+      background: linear-gradient(135deg, var(--primary), #00c6ff);
+      box-shadow: 0 8px 24px rgba(254, 238, 0, 0.25);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .app-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 21px;
+      background-color: #121214;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .app-title {
+      font-family: 'Righteous', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 60%, #e0e0e0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .status-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 32px;
+      max-width: 280px;
     }
 
     .btn {
-      display: inline-block;
-      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 52px;
       font-size: 16px;
-      font-weight: bold;
-      color: #121212;
-      background-color: #ffee00;
+      font-weight: 800;
+      color: #0b0e12;
+      background: linear-gradient(135deg, var(--primary), #ffd700);
       border: none;
-      border-radius: 8px;
+      border-radius: 14px;
       text-decoration: none;
-      margin-top: 20px;
       cursor: pointer;
-      transition: opacity 0.2s;
+      box-shadow: 0 4px 16px rgba(254, 238, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(254, 238, 0, 0.45);
     }
 
     .btn:active {
-      opacity: 0.8;
+      transform: translateY(1px);
     }
 
     .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      width: 36px;
-      height: 36px;
+      border: 3px solid rgba(255,255,255,0.06);
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      border-left-color: #ffee00;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
+      border-left-color: var(--primary);
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
     }
 
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
-
 <body>
-  <div id="loading-container">
-    <div class="spinner"></div>
-    <h2>Color Sudoku Açılıyor...</h2>
-    <p>Eğer uygulama otomatik olarak açılmazsa, aşağıdaki butona tıklayın.</p>
-  </div>
-
-  <a id="redirect-btn" class="btn" href="#">Oyunu Aç</a>
-
-  <!-- Expo Go Developer Tools Section -->
-  <div id="expo-go-container"
-    style="margin-top: 50px; padding: 15px; border-top: 1px solid #222; font-size: 13px; color: #666; width: 100%; max-width: 320px;">
-    <p style="margin-bottom: 8px;">Geliştiriciler İçin (Expo Go):</p>
-    <div style="display: flex; gap: 6px; justify-content: center; width: 100%;">
-      <input id="expo-ip" type="text" placeholder="Örn: 192.168.1.100:8081"
-        style="padding: 6px 10px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 13px; flex: 1; outline: none;">
-      <button onclick="openExpoGo()"
-        style="padding: 6px 12px; border-radius: 4px; border: none; background: #00c6ff; color: #000; font-weight: bold; cursor: pointer; font-size: 12px;">Expo
-        Go'da Aç</button>
+  <div class="glow-backdrop"></div>
+  
+  <div class="container">
+    <div class="app-icon-wrapper">
+      <img class="app-icon" src="icon.png" alt="Color Sudoku Icon" onerror="this.style.display='none';">
     </div>
+    
+    <h1 class="app-title">Color Sudoku</h1>
+    
+    <div class="spinner" id="spinner"></div>
+    <h2 class="status-title" id="status-title">Oyun Yükleniyor...</h2>
+    <p class="status-desc" id="status-desc">Oyun otomatik olarak açılmadıysa aşağıdaki butonla devam edebilirsiniz.</p>
+    
+    <a id="redirect-btn" class="btn" href="#">Oyunu Başlat</a>
   </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const sharedState = urlParams.get('sharedState') || '';
-    const type = urlParams.get('type') || 'normal'; // 'normal' veya 'color'
+    const type = urlParams.get('type') || 'normal';
     const expoUrlParam = urlParams.get('expoUrl') || '';
 
     let schemeUrl = '';
 
     if (expoUrlParam) {
-      // If expoUrl is provided in URL, automatically target Expo Go path
       schemeUrl = type === 'color'
         ? `${expoUrlParam}/--/sudoku/colorsudokugame?sharedState=${sharedState}`
         : `${expoUrlParam}/--/sudoku/normalsudokugame?sharedState=${sharedState}`;
-        
-      // Pre-fill the developer tools IP field
-      try {
-        const ipVal = expoUrlParam.replace('exp://', '');
-        document.getElementById('expo-ip').value = ipVal;
-      } catch (e) {}
     } else {
-      // Otherwise target production custom scheme colorsudoku://
       schemeUrl = type === 'color'
         ? `colorsudoku://sudoku/colorsudokugame?sharedState=${sharedState}`
         : `colorsudoku://sudoku/normalsudokugame?sharedState=${sharedState}`;
@@ -117,37 +212,15 @@
 
     document.getElementById('redirect-btn').href = schemeUrl;
 
-    // Auto-redirect immediately
+    // Auto-redirect
     window.location.href = schemeUrl;
 
-    // Fallback info if redirect takes too long
+    // Fallback UI update
     setTimeout(() => {
-      document.querySelector('h2').textContent = "Color Sudoku";
-      document.querySelector('.spinner').style.display = 'none';
-      document.querySelector('p').textContent = "Uygulamayı açmak için aşağıdaki butona tıklayabilirsiniz.";
-    }, 3000);
-
-    // Expo Go helper
-    const savedIp = localStorage.getItem('expo_ip') || '';
-    if (savedIp) {
-      document.getElementById('expo-ip').value = savedIp;
-    }
-
-    function openExpoGo() {
-      const ip = document.getElementById('expo-ip').value.trim();
-      if (!ip) {
-        alert("Lütfen bilgisayarınızın yerel IP adresini girin (Örn: 192.168.1.100:8081).");
-        return;
-      }
-      localStorage.setItem('expo_ip', ip);
-
-      const expoGoUrl = type === 'color'
-        ? `exp://${ip}/--/sudoku/colorsudokugame?sharedState=${sharedState}`
-        : `exp://${ip}/--/sudoku/normalsudokugame?sharedState=${sharedState}`;
-
-      window.location.href = expoGoUrl;
-    }
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('status-title').textContent = "Oyuna Katılın";
+      document.getElementById('status-desc').textContent = "Paylaşılan sudoku oyununu oynamak için yukarıdaki butona dokunun.";
+    }, 2500);
   </script>
 </body>
-
 </html>
