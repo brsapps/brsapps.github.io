@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>Color Sudoku Share Redirect</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
   <!-- Open Graph metadata for WhatsApp and other platforms -->
-  <meta property="og:title" content="Sudoku Oyunu Paylaşıldı">
+  <meta property="og:title" content="Color Sudoku Oyunu Paylaşıldı">
   <meta property="og:description" content="Senin için bir Sudoku oyunu hazırladım! Bakalım çözebilecek misin?">
   <meta property="og:type" content="website">
-  
+
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -24,6 +25,7 @@
       text-align: center;
       padding: 20px;
     }
+
     .btn {
       display: inline-block;
       padding: 12px 24px;
@@ -38,11 +40,13 @@
       cursor: pointer;
       transition: opacity 0.2s;
     }
+
     .btn:active {
       opacity: 0.8;
     }
+
     .spinner {
-      border: 4px solid rgba(255,255,255,0.1);
+      border: 4px solid rgba(255, 255, 255, 0.1);
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -50,24 +54,38 @@
       animation: spin 1s linear infinite;
       margin-bottom: 20px;
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
+
 <body>
   <div id="loading-container">
     <div class="spinner"></div>
     <h2>Color Sudoku Açılıyor...</h2>
     <p>Eğer uygulama otomatik olarak açılmazsa, aşağıdaki butona tıklayın.</p>
   </div>
-  
+
   <a id="redirect-btn" class="btn" href="#">Oyunu Aç</a>
 
   <!-- Expo Go Developer Tools Section -->
-  <div id="expo-go-container" style="margin-top: 50px; padding: 15px; border-top: 1px solid #222; font-size: 13px; color: #666; width: 100%; max-width: 320px;">
+  <div id="expo-go-container"
+    style="margin-top: 50px; padding: 15px; border-top: 1px solid #222; font-size: 13px; color: #666; width: 100%; max-width: 320px;">
     <p style="margin-bottom: 8px;">Geliştiriciler İçin (Expo Go):</p>
     <div style="display: flex; gap: 6px; justify-content: center; width: 100%;">
-      <input id="expo-ip" type="text" placeholder="Örn: 192.168.1.100:8081" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 13px; flex: 1; outline: none;">
-      <button onclick="openExpoGo()" style="padding: 6px 12px; border-radius: 4px; border: none; background: #00c6ff; color: #000; font-weight: bold; cursor: pointer; font-size: 12px;">Expo Go'da Aç</button>
+      <input id="expo-ip" type="text" placeholder="Örn: 192.168.1.100:8081"
+        style="padding: 6px 10px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 13px; flex: 1; outline: none;">
+      <button onclick="openExpoGo()"
+        style="padding: 6px 12px; border-radius: 4px; border: none; background: #00c6ff; color: #000; font-weight: bold; cursor: pointer; font-size: 12px;">Expo
+        Go'da Aç</button>
     </div>
   </div>
 
@@ -75,16 +93,33 @@
     const urlParams = new URLSearchParams(window.location.search);
     const sharedState = urlParams.get('sharedState') || '';
     const type = urlParams.get('type') || 'normal'; // 'normal' veya 'color'
-    
-    const schemeUrl = type === 'color' 
-      ? `colorsudoku://sudoku/colorsudokugame?sharedState=${sharedState}`
-      : `colorsudoku://sudoku/normalsudokugame?sharedState=${sharedState}`;
-      
+    const expoUrlParam = urlParams.get('expoUrl') || '';
+
+    let schemeUrl = '';
+
+    if (expoUrlParam) {
+      // If expoUrl is provided in URL, automatically target Expo Go path
+      schemeUrl = type === 'color'
+        ? `${expoUrlParam}/--/sudoku/colorsudokugame?sharedState=${sharedState}`
+        : `${expoUrlParam}/--/sudoku/normalsudokugame?sharedState=${sharedState}`;
+        
+      // Pre-fill the developer tools IP field
+      try {
+        const ipVal = expoUrlParam.replace('exp://', '');
+        document.getElementById('expo-ip').value = ipVal;
+      } catch (e) {}
+    } else {
+      // Otherwise target production custom scheme colorsudoku://
+      schemeUrl = type === 'color'
+        ? `colorsudoku://sudoku/colorsudokugame?sharedState=${sharedState}`
+        : `colorsudoku://sudoku/normalsudokugame?sharedState=${sharedState}`;
+    }
+
     document.getElementById('redirect-btn').href = schemeUrl;
-    
+
     // Auto-redirect immediately
     window.location.href = schemeUrl;
-    
+
     // Fallback info if redirect takes too long
     setTimeout(() => {
       document.querySelector('h2').textContent = "Color Sudoku";
@@ -105,13 +140,14 @@
         return;
       }
       localStorage.setItem('expo_ip', ip);
-      
+
       const expoGoUrl = type === 'color'
         ? `exp://${ip}/--/sudoku/colorsudokugame?sharedState=${sharedState}`
         : `exp://${ip}/--/sudoku/normalsudokugame?sharedState=${sharedState}`;
-        
+
       window.location.href = expoGoUrl;
     }
   </script>
 </body>
+
 </html>
