@@ -198,19 +198,88 @@
     const type = urlParams.get('type') || 'normal';
     const expoUrlParam = urlParams.get('expoUrl') || '';
 
+    // Custom simple base64 implementation matching the app's encoder
+    function base64Decode(str) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+      const cleanStr = str.replace(/=/g, '');
+      const bytes = [];
+      let buffer = 0;
+      let bits = 0;
+      for (let i = 0; i < cleanStr.length; i++) {
+        const char = cleanStr[i];
+        const val = chars.indexOf(char);
+        if (val === -1) continue;
+        buffer = (buffer << 6) | val;
+        bits += 6;
+        if (bits >= 8) {
+          bits -= 8;
+          bytes.push((buffer >> bits) & 0xff);
+        }
+      }
+
+      let result = '';
+      let i = 0;
+      while (i < bytes.length) {
+        const b1 = bytes[i++];
+        if (b1 < 0x80) {
+          result += String.fromCharCode(b1);
+        } else if (b1 > 0xbf && b1 < 0xe0) {
+          const b2 = bytes[i++];
+          result += String.fromCharCode(((b1 & 0x1f) << 6) | (b2 & 0x3f));
+        } else if (b1 > 0xdf && b1 < 0xf0) {
+          const b2 = bytes[i++];
+          const b3 = bytes[i++];
+          result += String.fromCharCode(((b1 & 0x0f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f));
+        } else {
+          const b2 = bytes[i++];
+          const b3 = bytes[i++];
+          const b4 = bytes[i++];
+          let utf32 = ((b1 & 0x07) << 18) | ((b2 & 0x3f) << 12) | ((b3 & 0x3f) << 6) | (b4 & 0x3f);
+          utf32 -= 0x10000;
+          result += String.fromCharCode(0xd800 + (utf32 >> 10), 0xdc00 + (utf32 & 0x3ff));
+        }
+      }
+      return result;
+    }
+
+    function validateSharedState(encoded) {
+      if (!encoded) return false;
+      try {
+        const jsonStr = base64Decode(encoded);
+        const parsed = JSON.parse(jsonStr);
+        if (!parsed || typeof parsed !== 'object') return false;
+        if (!Array.isArray(parsed.g) || !Array.isArray(parsed.s) || !Array.isArray(parsed.f)) return false;
+        if (typeof parsed.mo !== 'string' || typeof parsed.gi !== 'string') return false;
+        const rows = parsed.g.length;
+        if (rows === 0 || !Array.isArray(parsed.g[0])) return false;
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const isValid = validateSharedState(sharedState);
     let schemeUrl = '';
 
-    if (expoUrlParam) {
-      schemeUrl = type === 'color'
-        ? `${expoUrlParam}/--/sudoku/colorsudokugame?sharedState=${sharedState}`
-        : `${expoUrlParam}/--/sudoku/normalsudokugame?sharedState=${sharedState}`;
+    if (isValid) {
+      if (expoUrlParam) {
+        schemeUrl = type === 'color'
+          ? `${expoUrlParam}/--/sudoku/colorsudokugame?sharedState=${sharedState}`
+          : `${expoUrlParam}/--/sudoku/normalsudokugame?sharedState=${sharedState}`;
+      } else {
+        schemeUrl = type === 'color'
+          ? `colorsudoku://sudoku/colorsudokugame?sharedState=${sharedState}`
+          : `colorsudoku://sudoku/normalsudokugame?sharedState=${sharedState}`;
+      }
     } else {
-      schemeUrl = type === 'color'
-        ? `colorsudoku://sudoku/colorsudokugame?sharedState=${sharedState}`
-        : `colorsudoku://sudoku/normalsudokugame?sharedState=${sharedState}`;
+      // Just open the app if sharedState is invalid/fake or not provided
+      schemeUrl = expoUrlParam ? expoUrlParam : 'colorsudoku://';
     }
 
     document.getElementById('redirect-btn').href = schemeUrl;
+    if (!isValid) {
+      document.getElementById('redirect-btn').textContent = "Uygulamayı Aç";
+    }
 
     // Auto-redirect
     window.location.href = schemeUrl;
@@ -218,8 +287,13 @@
     // Fallback UI update
     setTimeout(() => {
       document.getElementById('spinner').style.display = 'none';
-      document.getElementById('status-title').textContent = "Oyuna Katılın";
-      document.getElementById('status-desc').textContent = "Paylaşılan Color Sudoku oyununu oynamak için yukarıdaki butona dokunun.";
+      if (isValid) {
+        document.getElementById('status-title').textContent = "Oyuna Katılın";
+        document.getElementById('status-desc').textContent = `Paylaşılan ${type === 'color' ? 'Color' : 'Klasik'} Sudoku oyununu oynamak için yukarıdaki butona dokunun.`;
+      } else {
+        document.getElementById('status-title').textContent = "Uygulamayı Açın";
+        document.getElementById('status-desc').textContent = "Uygulamaya gitmek için yukarıdaki butona dokunun.";
+      }
     }, 2500);
   </script>
 </body>
