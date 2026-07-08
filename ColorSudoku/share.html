@@ -281,8 +281,10 @@
       document.getElementById('redirect-btn').textContent = "Uygulamayı Aç";
     }
 
-    // Auto-redirect
-    window.location.href = schemeUrl;
+    // Auto-redirect only if valid
+    if (isValid) {
+      window.location.href = schemeUrl;
+    }
 
     // Fallback UI update
     setTimeout(() => {
