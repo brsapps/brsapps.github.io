@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>Color Sudoku</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+    rel="stylesheet">
+
   <!-- Open Graph metadata -->
   <meta property="og:title" content="Color Sudoku Oyunu Paylaşıldı">
   <meta property="og:description" content="Senin için bir Color Sudoku oyunu hazırladım! Bakalım çözebilecek misin?">
   <meta property="og:type" content="website">
   <meta property="og:image" content="icon.png">
-  
+
   <style>
     :root {
       --primary: #ffee00;
@@ -23,7 +25,7 @@
       --text: #ffffff;
       --text-muted: #8b92b6;
     }
-    
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -38,7 +40,7 @@
       justify-content: center;
       min-height: 100vh;
       background-color: var(--bg);
-      background-image: 
+      background-image:
         radial-gradient(circle at 10% 20%, rgba(254, 238, 0, 0.05) 0%, transparent 40%),
         radial-gradient(circle at 90% 80%, rgba(0, 198, 255, 0.04) 0%, transparent 40%);
       color: var(--text);
@@ -62,8 +64,15 @@
     }
 
     @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.12; }
-      100% { transform: scale(1.2); opacity: 0.2; }
+      0% {
+        transform: scale(1);
+        opacity: 0.12;
+      }
+
+      100% {
+        transform: scale(1.2);
+        opacity: 0.2;
+      }
     }
 
     .container {
@@ -77,7 +86,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -104,9 +113,17 @@
     }
 
     @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-      100% { transform: translateY(0px); }
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
     }
 
     .app-title {
@@ -163,7 +180,7 @@
     }
 
     .spinner {
-      border: 3px solid rgba(255,255,255,0.06);
+      border: 3px solid rgba(255, 255, 255, 0.06);
       width: 28px;
       height: 28px;
       border-radius: 50%;
@@ -172,23 +189,32 @@
       margin-bottom: 12px;
     }
 
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="glow-backdrop"></div>
-  
+
   <div class="container">
     <div class="app-icon-wrapper">
       <img class="app-icon" src="icon.png" alt="Color Sudoku Icon" onerror="this.style.display='none';">
     </div>
-    
+
     <h1 class="app-title">Color Sudoku</h1>
-    
+
     <div class="spinner" id="spinner"></div>
     <h2 class="status-title" id="status-title">Oyun Yükleniyor...</h2>
     <p class="status-desc" id="status-desc">Oyun otomatik olarak açılmadıysa aşağıdaki butonla devam edebilirsiniz.</p>
-    
+
     <a id="redirect-btn" class="btn" href="#">Oyunu Başlat</a>
   </div>
 
@@ -294,9 +320,10 @@
         document.getElementById('status-desc').textContent = `Paylaşılan ${type === 'color' ? 'Color' : 'Klasik'} Sudoku oyununu oynamak için aşağıdaki butona dokunun.`;
       } else {
         document.getElementById('status-title').textContent = "Uygulamayı Açın";
-        document.getElementById('status-desc').textContent = "Uygulamaya gitmek için yukarıdaki butona dokunun.";
+        document.getElementById('status-desc').textContent = "Uygulamaya gitmek için aşağıdaki butona dokunun.";
       }
     }, 2500);
   </script>
 </body>
+
 </html>
