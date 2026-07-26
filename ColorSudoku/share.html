@@ -222,8 +222,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     const sharedState = urlParams.get('sharedState') || '';
     const roomCode = urlParams.get('roomCode') || urlParams.get('room_code') || '';
+    const token = urlParams.get('token') || urlParams.get('t') || '';
+    const pass = urlParams.get('pass') || urlParams.get('password') || '';
     const type = urlParams.get('type') || 'normal';
     const expoUrlParam = urlParams.get('expoUrl') || '';
+    const tokenQuery = token ? `&token=${encodeURIComponent(token)}` : '';
+    const passQuery = pass ? `&pass=${encodeURIComponent(pass)}` : '';
+    const extraQuery = `${tokenQuery}${passQuery}`;
 
     // Custom simple base64 implementation matching the app's encoder
     function base64Decode(str) {
@@ -291,8 +296,8 @@
 
     if (isOnlineRoom) {
       schemeUrl = expoUrlParam
-        ? `${expoUrlParam}/--/sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}`
-        : `colorsudoku://sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}`;
+        ? `${expoUrlParam}/--/sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`
+        : `colorsudoku://sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`;
     } else if (isValid) {
       if (expoUrlParam) {
         schemeUrl = type === 'color'
