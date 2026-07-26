@@ -221,6 +221,7 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const sharedState = urlParams.get('sharedState') || '';
+    const roomCode = urlParams.get('roomCode') || urlParams.get('room_code') || '';
     const type = urlParams.get('type') || 'normal';
     const expoUrlParam = urlParams.get('expoUrl') || '';
 
@@ -285,9 +286,14 @@
     }
 
     const isValid = validateSharedState(sharedState);
+    const isOnlineRoom = Boolean(roomCode);
     let schemeUrl = '';
 
-    if (isValid) {
+    if (isOnlineRoom) {
+      schemeUrl = expoUrlParam
+        ? `${expoUrlParam}/--/sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}`
+        : `colorsudoku://sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}`;
+    } else if (isValid) {
       if (expoUrlParam) {
         schemeUrl = type === 'color'
           ? `${expoUrlParam}/--/sudoku/colorsudokugame?sharedState=${sharedState}`
@@ -303,19 +309,24 @@
     }
 
     document.getElementById('redirect-btn').href = schemeUrl;
-    if (!isValid) {
+    if (isOnlineRoom) {
+      document.getElementById('redirect-btn').textContent = "Odaya Katıl";
+    } else if (!isValid) {
       document.getElementById('redirect-btn').textContent = "Uygulamayı Aç";
     }
 
-    // Auto-redirect only if valid
-    if (isValid) {
+    // Auto-redirect if valid sharedState or valid online roomCode
+    if (isValid || isOnlineRoom) {
       window.location.href = schemeUrl;
     }
 
     // Fallback UI update
     setTimeout(() => {
       document.getElementById('spinner').style.display = 'none';
-      if (isValid) {
+      if (isOnlineRoom) {
+        document.getElementById('status-title').textContent = "Oyun Odasına Katıl (#" + roomCode + ")";
+        document.getElementById('status-desc').textContent = "Color Sudoku online lobisine katılmak için aşağıdaki butona dokunun.";
+      } else if (isValid) {
         document.getElementById('status-title').textContent = "Oyuna Katılın";
         document.getElementById('status-desc').textContent = `Paylaşılan ${type === 'color' ? 'Color' : 'Klasik'} Sudoku oyununu oynamak için aşağıdaki butona dokunun.`;
       } else {
