@@ -307,17 +307,13 @@
 
     if (isOnlineRoom) {
       schemeUrl = expoUrlParam
-        ? `${expoUrlParam}/--/sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`
-        : `colorsudoku://sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`;
+        ? `${expoUrlParam}?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`
+        : `colorsudoku://?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`;
     } else if (isValid) {
       if (expoUrlParam) {
-        schemeUrl = type === 'color'
-          ? `${expoUrlParam}/--/sudoku/colorsudokugame?sharedState=${encodedSharedState}&loadedFromRoute=true`
-          : `${expoUrlParam}/--/sudoku/normalsudokugame?sharedState=${encodedSharedState}&loadedFromRoute=true`;
+        schemeUrl = `${expoUrlParam}?type=${type}&sharedState=${encodedSharedState}&loadedFromRoute=true`;
       } else {
-        schemeUrl = type === 'color'
-          ? `colorsudoku://sudoku/colorsudokugame?sharedState=${encodedSharedState}&loadedFromRoute=true`
-          : `colorsudoku://sudoku/normalsudokugame?sharedState=${encodedSharedState}&loadedFromRoute=true`;
+        schemeUrl = `colorsudoku://?type=${type}&sharedState=${encodedSharedState}&loadedFromRoute=true`;
       }
     } else {
       // Just open the app if sharedState is invalid/fake or not provided
