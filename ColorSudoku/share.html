@@ -294,10 +294,23 @@
     const isOnlineRoom = Boolean(roomCode);
     let schemeUrl = '';
 
+    function buildAppUrl(pathAndQuery) {
+      const cleanPath = pathAndQuery.replace(/^\/+/, '');
+      if (expoUrlParam) {
+        const cleanExpo = expoUrlParam.replace(/\/+$/, '');
+        if (cleanExpo.startsWith('exp://') || cleanExpo.startsWith('http://') || cleanExpo.startsWith('https://')) {
+          return `${cleanExpo}/--/${cleanPath}`;
+        }
+        if (cleanExpo.startsWith('colorsudoku://')) {
+          return `colorsudoku://${cleanPath}`;
+        }
+        return `${cleanExpo}/${cleanPath}`;
+      }
+      return `colorsudoku://${cleanPath}`;
+    }
+
     if (isOnlineRoom) {
-      schemeUrl = expoUrlParam
-        ? `${expoUrlParam}/--/sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`
-        : `colorsudoku://sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`;
+      schemeUrl = buildAppUrl(`sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`);
     } else if (isValid) {
       const targetPath = type === 'color' ? '/sudoku/colorsudokugame' : '/sudoku/normalsudokugame';
       const gameParams = JSON.stringify({
@@ -307,14 +320,10 @@
         playwithfriend: 'true',
         loadedFromRoute: 'true'
       });
-      if (expoUrlParam) {
-        schemeUrl = `${expoUrlParam}/--/sudoku/loading?to=${encodeURIComponent(targetPath)}&params=${encodeURIComponent(gameParams)}`;
-      } else {
-        schemeUrl = `colorsudoku://sudoku/loading?to=${encodeURIComponent(targetPath)}&params=${encodeURIComponent(gameParams)}`;
-      }
+      schemeUrl = buildAppUrl(`sudoku/loading?to=${encodeURIComponent(targetPath)}&params=${encodeURIComponent(gameParams)}`);
     } else {
       // Just open the app if sharedState is invalid/fake or not provided
-      schemeUrl = expoUrlParam ? expoUrlParam : 'colorsudoku://';
+      schemeUrl = buildAppUrl('');
     }
 
     document.getElementById('redirect-btn').href = schemeUrl;
