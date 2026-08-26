@@ -1,268 +1,356 @@
-import * as Linking from 'expo-linking';
+<!DOCTYPE html>
+<html>
 
-// Custom simple base64 implementation to be safe in React Native environments without btoa/atob
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+<head>
+  <meta charset="utf-8">
+  <title>Color Sudoku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+    rel="stylesheet">
 
-export function base64Encode(str: string): string {
-  const bytes = [];
-  for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i);
-    if (code < 0x80) {
-      bytes.push(code);
-    } else if (code < 0x800) {
-      bytes.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
-    } else if (code < 0xd800 || code >= 0xe000) {
-      bytes.push(0xe0 | (code >> 12), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
+  <!-- Open Graph metadata -->
+  <meta property="og:title" content="Color Sudoku Oyunu Paylaşıldı">
+  <meta property="og:description" content="Senin için bir Color Sudoku oyunu hazırladım! Bakalım çözebilecek misin?">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="icon.png">
+
+  <style>
+    :root {
+      --primary: #ffee00;
+      --bg: #0d0e12;
+      --card-bg: rgba(25, 27, 38, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #ffffff;
+      --text-muted: #8b92b6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(254, 238, 0, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 198, 255, 0.04) 0%, transparent 40%);
+      color: var(--text);
+      text-align: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    /* Glow backdrop element */
+    .glow-backdrop {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: var(--primary);
+      filter: blur(120px);
+      opacity: 0.15;
+      border-radius: 50%;
+      z-index: 1;
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.12;
+      }
+
+      100% {
+        transform: scale(1.2);
+        opacity: 0.2;
+      }
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 400px;
+      padding: 40px 24px;
+      border-radius: 24px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-icon-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      padding: 3px;
+      background: linear-gradient(135deg, var(--primary), #00c6ff);
+      box-shadow: 0 8px 24px rgba(254, 238, 0, 0.25);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .app-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 21px;
+      background-color: #121214;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .app-title {
+      font-family: 'Righteous', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 60%, #e0e0e0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .status-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 32px;
+      max-width: 280px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 52px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #0b0e12;
+      background: linear-gradient(135deg, var(--primary), #ffd700);
+      border: none;
+      border-radius: 14px;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(254, 238, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(254, 238, 0, 0.45);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.06);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border-left-color: var(--primary);
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glow-backdrop"></div>
+
+  <div class="container">
+    <div class="app-icon-wrapper">
+      <img class="app-icon" src="icon.png" alt="Color Sudoku Icon" onerror="this.style.display='none';">
+    </div>
+
+    <h1 class="app-title">Color Sudoku</h1>
+
+    <div class="spinner" id="spinner"></div>
+    <h2 class="status-title" id="status-title">Oyun Yükleniyor...</h2>
+    <p class="status-desc" id="status-desc">Oyun otomatik olarak açılmadıysa aşağıdaki butonla devam edebilirsiniz.</p>
+
+    <a id="redirect-btn" class="btn" href="#">Oyunu Başlat</a>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedState = urlParams.get('sharedState') || '';
+    const roomCode = urlParams.get('roomCode') || urlParams.get('room_code') || '';
+    const token = urlParams.get('token') || urlParams.get('t') || '';
+    const pass = urlParams.get('pass') || urlParams.get('password') || '';
+    const type = urlParams.get('type') || 'normal';
+    const expoUrlParam = urlParams.get('expoUrl') || '';
+    const tokenQuery = token ? `&token=${encodeURIComponent(token)}` : '';
+    const passQuery = pass ? `&pass=${encodeURIComponent(pass)}` : '';
+    const extraQuery = `${tokenQuery}${passQuery}`;
+
+    // Custom simple base64 implementation matching the app's encoder
+    function base64Decode(str) {
+      if (!str) return '';
+      let cleanStr = str;
+      try {
+        if (cleanStr.includes('%')) {
+          cleanStr = decodeURIComponent(cleanStr);
+        }
+      } catch (_) {}
+      cleanStr = cleanStr.replace(/ /g, '+').replace(/=/g, '');
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+      const bytes = [];
+      let buffer = 0;
+      let bits = 0;
+      for (let i = 0; i < cleanStr.length; i++) {
+        const char = cleanStr[i];
+        let val = chars.indexOf(char);
+        if (val === -1) {
+          if (char === '+') val = 62;
+          else if (char === '/') val = 63;
+          else continue;
+        }
+        buffer = (buffer << 6) | val;
+        bits += 6;
+        if (bits >= 8) {
+          bits -= 8;
+          bytes.push((buffer >> bits) & 0xff);
+        }
+      }
+
+      let result = '';
+      let i = 0;
+      while (i < bytes.length) {
+        const b1 = bytes[i++];
+        if (b1 < 0x80) {
+          result += String.fromCharCode(b1);
+        } else if (b1 > 0xbf && b1 < 0xe0) {
+          const b2 = bytes[i++];
+          result += String.fromCharCode(((b1 & 0x1f) << 6) | (b2 & 0x3f));
+        } else if (b1 > 0xdf && b1 < 0xf0) {
+          const b2 = bytes[i++];
+          const b3 = bytes[i++];
+          result += String.fromCharCode(((b1 & 0x0f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f));
+        } else {
+          const b2 = bytes[i++];
+          const b3 = bytes[i++];
+          const b4 = bytes[i++];
+          let utf32 = ((b1 & 0x07) << 18) | ((b2 & 0x3f) << 12) | ((b3 & 0x3f) << 6) | (b4 & 0x3f);
+          utf32 -= 0x10000;
+          result += String.fromCharCode(0xd800 + (utf32 >> 10), 0xdc00 + (utf32 & 0x3ff));
+        }
+      }
+      return result;
+    }
+
+    function validateSharedState(encoded) {
+      if (!encoded) return false;
+      try {
+        const jsonStr = base64Decode(encoded);
+        const parsed = JSON.parse(jsonStr);
+        if (!parsed || typeof parsed !== 'object') return false;
+        if (!Array.isArray(parsed.g) || !Array.isArray(parsed.s) || !Array.isArray(parsed.f)) return false;
+        const rows = parsed.g.length;
+        if (rows === 0 || !Array.isArray(parsed.g[0])) return false;
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const isValid = validateSharedState(sharedState);
+    const isOnlineRoom = Boolean(roomCode);
+    let schemeUrl = '';
+    const encodedSharedState = encodeURIComponent(sharedState);
+
+    if (isOnlineRoom) {
+      schemeUrl = expoUrlParam
+        ? `${expoUrlParam}/--/sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`
+        : `colorsudoku://sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`;
+    } else if (isValid) {
+      if (expoUrlParam) {
+        schemeUrl = type === 'color'
+          ? `${expoUrlParam}/--/sudoku/colorsudokugame?sharedState=${encodedSharedState}&loadedFromRoute=true`
+          : `${expoUrlParam}/--/sudoku/normalsudokugame?sharedState=${encodedSharedState}&loadedFromRoute=true`;
+      } else {
+        schemeUrl = type === 'color'
+          ? `colorsudoku://sudoku/colorsudokugame?sharedState=${encodedSharedState}&loadedFromRoute=true`
+          : `colorsudoku://sudoku/normalsudokugame?sharedState=${encodedSharedState}&loadedFromRoute=true`;
+      }
     } else {
-      // surrogate pair
-      i++;
-      const nextCode = str.charCodeAt(i);
-      const utf32 = 0x10000 + (((code & 0x3ff) << 10) | (nextCode & 0x3ff));
-      bytes.push(
-        0xf0 | (utf32 >> 18),
-        0x80 | ((utf32 >> 12) & 0x3f),
-        0x80 | ((utf32 >> 6) & 0x3f),
-        0x80 | (utf32 & 0x3f)
-      );
+      // Just open the app if sharedState is invalid/fake or not provided
+      schemeUrl = expoUrlParam ? expoUrlParam : 'colorsudoku://';
     }
-  }
 
-  let result = '';
-  let i = 0;
-  const len = bytes.length;
-  for (; i < len - 2; i += 3) {
-    result += CHARS[bytes[i] >> 2];
-    result += CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
-    result += CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
-    result += CHARS[bytes[i + 2] & 63];
-  }
-  if (i < len) {
-    result += CHARS[bytes[i] >> 2];
-    if (i === len - 1) {
-      result += CHARS[(bytes[i] & 3) << 4];
-      result += '==';
-    } else {
-      result += CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
-      result += CHARS[(bytes[i + 1] & 15) << 2];
-      result += '=';
+    document.getElementById('redirect-btn').href = schemeUrl;
+    if (isOnlineRoom) {
+      document.getElementById('redirect-btn').textContent = "Odaya Katıl";
+    } else if (!isValid) {
+      document.getElementById('redirect-btn').textContent = "Uygulamayı Aç";
     }
-  }
-  return result;
-}
 
-export function base64Decode(str: string): string {
-  if (!str) return '';
-  let cleanStr = str;
-  try {
-    if (cleanStr.includes('%')) {
-      cleanStr = decodeURIComponent(cleanStr);
+    // Auto-redirect if valid sharedState or valid online roomCode
+    if (isValid || isOnlineRoom) {
+      window.location.href = schemeUrl;
     }
-  } catch (_) {}
-  // Convert URL spaces to + and remove padding
-  cleanStr = cleanStr.replace(/ /g, '+').replace(/=/g, '');
-  const bytes: number[] = [];
-  let buffer = 0;
-  let bits = 0;
-  for (let i = 0; i < cleanStr.length; i++) {
-    const char = cleanStr[i];
-    let val = CHARS.indexOf(char);
-    if (val === -1) {
-      if (char === '+') val = 62;
-      else if (char === '/') val = 63;
-      else continue;
-    }
-    buffer = (buffer << 6) | val;
-    bits += 6;
-    if (bits >= 8) {
-      bits -= 8;
-      bytes.push((buffer >> bits) & 0xff);
-    }
-  }
 
-  let result = '';
-  let i = 0;
-  while (i < bytes.length) {
-    const b1 = bytes[i++];
-    if (b1 < 0x80) {
-      result += String.fromCharCode(b1);
-    } else if (b1 > 0xbf && b1 < 0xe0) {
-      const b2 = bytes[i++];
-      result += String.fromCharCode(((b1 & 0x1f) << 6) | (b2 & 0x3f));
-    } else if (b1 > 0xdf && b1 < 0xf0) {
-      const b2 = bytes[i++];
-      const b3 = bytes[i++];
-      result += String.fromCharCode(((b1 & 0x0f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f));
-    } else {
-      const b2 = bytes[i++];
-      const b3 = bytes[i++];
-      const b4 = bytes[i++];
-      let utf32 = ((b1 & 0x07) << 18) | ((b2 & 0x3f) << 12) | ((b3 & 0x3f) << 6) | (b4 & 0x3f);
-      utf32 -= 0x10000;
-      result += String.fromCharCode(0xd800 + (utf32 >> 10), 0xdc00 + (utf32 & 0x3ff));
-    }
-  }
-  return result;
-}
+    // Fallback UI update
+    setTimeout(() => {
+      document.getElementById('spinner').style.display = 'none';
+      if (isOnlineRoom) {
+        document.getElementById('status-title').textContent = "Oyun Odasına Katıl (#" + roomCode + ")";
+        document.getElementById('status-desc').textContent = "Color Sudoku online lobisine katılmak için aşağıdaki butona dokunun.";
+      } else if (isValid) {
+        document.getElementById('status-title').textContent = "Oyuna Katılın";
+        document.getElementById('status-desc').textContent = `Paylaşılan ${type === 'color' ? 'Color' : 'Klasik'} Sudoku oyununu oynamak için aşağıdaki butona dokunun.`;
+      } else {
+        document.getElementById('status-title').textContent = "Uygulamayı Açın";
+        document.getElementById('status-desc').textContent = "Uygulamaya gitmek için aşağıdaki butona dokunun.";
+      }
+    }, 2500);
+  </script>
+</body>
 
-// Define your web redirect page URL here (e.g. deployed on Vercel, Netlify, or Github Pages)
-export const WEB_REDIRECT_URL = "https://brsapps.github.io/ColorSudoku/share.html";
-
-export function generatePwfGameId(): string {
-  const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let id = '';
-  for (let i = 0; i < 7; i++) {
-    id += CHARS[Math.floor(Math.random() * CHARS.length)];
-  }
-  return id;
-}
-
-function buildSimpleFingerprint(value: string): string {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(i);
-    hash |= 0;
-  }
-  return (hash >>> 0).toString(36).toUpperCase();
-}
-
-export function buildSharedGameFingerprint(state: Pick<SharedGameState, 'mode' | 'gameId' | 'grid' | 'solution' | 'fixedCells' | 'colorsGrid'>): string {
-  return buildSimpleFingerprint(JSON.stringify({
-    mode: state.mode,
-    gameId: state.gameId,
-    grid: state.grid,
-    solution: state.solution,
-    fixedCells: state.fixedCells,
-    colorsGrid: state.colorsGrid || []
-  }));
-}
-
-export interface SharedGameState {
-  grid: number[][];
-  solution: number[][];
-  fixedCells: boolean[][];
-  colorsGrid?: string[][];
-  maxTime: number;
-  maxMoves: number;
-  maxHints: number;
-  timerEnabled: boolean;
-  movesEnabled: boolean;
-  hintsEnabled: boolean;
-  showSolutionEnabled: boolean;
-  showPauseButton: boolean;
-  showNoteButton: boolean;
-  mode: string;
-  gameId: string;
-  playwithfriend?: boolean;
-  pwfgameid?: string;
-  fingerprint?: string;
-}
-
-export function isFriendPlayVisible(
-  sharedState?: Partial<SharedGameState> | null,
-  progressState?: { playwithfriend?: boolean | number | null } | null
-): boolean {
-  return sharedState?.playwithfriend === true || progressState?.playwithfriend === true || progressState?.playwithfriend === 1;
-}
-
-export interface ShortSharedState {
-  g: number[][];       // grid
-  s: number[][];       // solution
-  f: boolean[][];      // fixedCells
-  c?: string[][];      // colorsGrid
-  t: number;           // maxTime
-  m: number;           // maxMoves
-  h: number;           // maxHints
-  te: boolean;         // timerEnabled
-  me: boolean;         // movesEnabled
-  he: boolean;         // hintsEnabled
-  se: boolean;         // showSolutionEnabled
-  sp: boolean;         // showPauseButton
-  sn: boolean;         // showNoteButton
-  mo: string;          // mode
-  gi: string;          // gameId
-  pf?: boolean;        // playwithfriend
-  fp?: string;         // pwfgameid
-}
-
-export function encodeSharedState(state: SharedGameState): string {
-  const fingerprint = state.fingerprint ?? state.pwfgameid ?? buildSharedGameFingerprint(state);
-  const shortState: ShortSharedState = {
-    g: state.grid,
-    s: state.solution,
-    f: state.fixedCells,
-    c: state.colorsGrid,
-    t: state.maxTime,
-    m: state.maxMoves,
-    h: state.maxHints,
-    te: state.timerEnabled,
-    me: state.movesEnabled,
-    he: state.hintsEnabled,
-    se: state.showSolutionEnabled,
-    sp: state.showPauseButton,
-    sn: state.showNoteButton,
-    mo: state.mode,
-    gi: state.gameId,
-    pf: state.playwithfriend === true,
-    fp: fingerprint
-  };
-  return base64Encode(JSON.stringify(shortState));
-}
-
-export function decodeSharedState(encoded: string, silent: boolean = false): SharedGameState | null {
-  try {
-    const jsonStr = base64Decode(encoded);
-    const shortState = JSON.parse(jsonStr) as ShortSharedState;
-    const fingerprint = shortState.fp || buildSharedGameFingerprint({
-      mode: shortState.mo,
-      gameId: shortState.gi,
-      grid: shortState.g,
-      solution: shortState.s,
-      fixedCells: shortState.f,
-      colorsGrid: shortState.c || []
-    });
-
-    return {
-      grid: shortState.g,
-      solution: shortState.s,
-      fixedCells: shortState.f,
-      colorsGrid: shortState.c,
-      maxTime: shortState.t,
-      maxMoves: shortState.m,
-      maxHints: shortState.h,
-      timerEnabled: shortState.te,
-      movesEnabled: shortState.me,
-      hintsEnabled: shortState.he,
-      showSolutionEnabled: shortState.se,
-      showPauseButton: shortState.sp,
-      showNoteButton: shortState.sn,
-      mode: shortState.mo,
-      gameId: shortState.gi,
-      playwithfriend: shortState.pf === true,
-      pwfgameid: fingerprint,
-      fingerprint
-    };
-  } catch (e) {
-    if (!silent) {
-      console.error('Failed to decode shared game state:', e);
-    }
-    return null;
-  }
-}
-
-// Active game tracking to prevent loading shared games if another game is actively in progress
-export interface ActiveGameTracker {
-  type: 'color' | 'normal';
-  isPlaying: boolean;
-  params: any;
-}
-
-let activeGame: ActiveGameTracker | null = null;
-
-export function getActiveGame(): ActiveGameTracker | null {
-  return activeGame;
-}
-
-export function setActiveGame(tracker: ActiveGameTracker | null): void {
-  activeGame = tracker;
-}
-
+</html>
