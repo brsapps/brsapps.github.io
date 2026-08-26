@@ -304,20 +304,23 @@
     const isOnlineRoom = Boolean(roomCode);
     let schemeUrl = '';
     const encodedSharedState = encodeURIComponent(sharedState);
+    const baseExpo = expoUrlParam ? expoUrlParam.split('/--')[0].replace(/\/+$/, '') : '';
+    const expoPrefix = baseExpo ? `${baseExpo}/--/` : '';
 
     if (isOnlineRoom) {
-      schemeUrl = expoUrlParam
-        ? `${expoUrlParam}?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`
-        : `colorsudoku://?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`;
+      schemeUrl = expoPrefix
+        ? `${expoPrefix}sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`
+        : `colorsudoku://sudoku/online/lobby?roomCode=${encodeURIComponent(roomCode)}${extraQuery}`;
     } else if (isValid) {
-      if (expoUrlParam) {
-        schemeUrl = `${expoUrlParam}?type=${type}&sharedState=${encodedSharedState}&loadedFromRoute=true`;
+      const gameScreen = type === 'color' ? 'sudoku/colorsudokugame' : 'sudoku/normalsudokugame';
+      if (expoPrefix) {
+        schemeUrl = `${expoPrefix}${gameScreen}?sharedState=${encodedSharedState}&loadedFromRoute=true`;
       } else {
-        schemeUrl = `colorsudoku://?type=${type}&sharedState=${encodedSharedState}&loadedFromRoute=true`;
+        schemeUrl = `colorsudoku://${gameScreen}?sharedState=${encodedSharedState}&loadedFromRoute=true`;
       }
     } else {
       // Just open the app if sharedState is invalid/fake or not provided
-      schemeUrl = expoUrlParam ? expoUrlParam : 'colorsudoku://';
+      schemeUrl = expoPrefix ? expoPrefix : 'colorsudoku://';
     }
 
     document.getElementById('redirect-btn').href = schemeUrl;
